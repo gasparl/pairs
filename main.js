@@ -89,7 +89,7 @@ const load_language = function() {
             }
         });
 
-        set_grid(6);
+        set_grid(2);
 
         // If the browser supports the JavaScript included (essentially: ES6), switch to first division.
         switch_div('init_fail', start_div, 0, false);
@@ -107,11 +107,13 @@ const load_language = function() {
 
 const word_set = ['Admired', 'Alienated', 'Abused', 'Afraid', 'Ambivalent', 'Alive', 'Ashamed', 'Aggravated', 'Alarmed', 'Awkward', 'Appreciated', 'Burdened', 'Agitated', 'Anxious', 'Baffled', 'Assured', 'Condemned', 'Anguished', 'Appalled', 'Bewildered', 'Cheerful', 'Crushed', 'Annoyed', 'Apprehensive', 'Bothered', 'Confident', 'Defeated', 'Betrayed', 'Awed', 'Constricted', 'Content', 'Dejected', 'Cheated', 'Concerned', 'Directionless', 'Delighted', 'Demoralized', 'Coerced', 'Defensive', 'Disorganized', 'Determined', 'Depressed', 'Controlled', 'Desperate', 'Distracted', 'Ecstatic', 'Deserted', 'Deceived', 'Doubtful', 'Doubtful', 'Elated', 'Despised', 'Disgusted', 'Fearful', 'Flustered', 'Encouraged', 'Devastated', 'Dismayed', 'Frantic', 'Foggy', 'Energized', 'Disappointed', 'Displeased', 'Full', 'of', 'dread', 'Hesitant', 'Enthusiastic', 'Discarded', 'Dominated', 'Guarded', 'Immobilized', 'Excited', 'Discouraged', 'Enraged', 'Horrified', 'Misunderstood', 'Exuberant', 'Disgraced', 'Exasperated', 'Impatient', 'Perplexed', 'Flattered', 'Disheartened', 'Exploited', 'Insecure', 'Puzzled', 'Fortunate', 'Disillusioned', 'Frustrated', 'Intimidated', 'Stagnant', 'Fulfilled', 'Dismal', 'Fuming', 'Nervous', 'Surprised', 'Glad', 'Distant', 'Furious', 'Overwhelmed', 'Torn', 'Good', 'Distraught', 'Harassed', 'Panicky', 'Trapped', 'Grateful', 'Distressed', 'Hateful', 'Perplexed', 'Troubled', 'Gratified', 'Drained', 'Hostile', 'Petrified', 'Uncertain', 'Hopeful', 'Empty', 'Humiliated', 'Reluctant', 'Uncomfortable', 'Joyful', 'Exhausted', 'Incensed', 'Shaken', 'Undecided'];
 
-const selections = [];
+let selections = [];
+let previous;
+let listen = true;
 const set_grid = function(rows) {
     const cols = 4;
     const n_word = rows * cols;
-    const all_words = [].concat(...Array(2).fill(shuffle(word_set).slice(0, n_word)));
+    const all_words = shuffle([].concat(...Array(2).fill(shuffle(word_set).slice(0, n_word / 2))));
 
     const container = document.getElementById("grid");
     container.style.setProperty('--grid-rows', rows);
@@ -121,16 +123,25 @@ const set_grid = function(rows) {
         cell.innerHTML = '<span>' + word + '</span>';
         cell.id = 'cell_' + (i + 1);
         cell.onclick = function() {
-            if (cell.childNodes[0].style.visibility !== 'visible') {
-                if (selections.length === 2) {
-                    selections.length = 0;
-                    [...document.getElementsByClassName('grid-item')].forEach((elem) => {
-                        elem.childNodes[0].style.visibility = 'hidden';
-                    });
-                } else {
-                }
-                selections.push(cell.id);
+            if (cell.childNodes[0].style.visibility !== 'visible' && listen) {
                 cell.childNodes[0].style.visibility = 'visible';
+                if (previous !== undefined) {
+                    listen = false;
+                    setTimeout(() => {
+                        listen = true;
+                        [previous, cell].forEach(el => {
+                            el.childNodes[0].style.visibility = 'hidden';
+                        });
+                        if (previous.textContent === cell.textContent) {
+                            [previous, cell].forEach(el => {
+                                el.style.visibility = 'hidden';
+                            });
+                        }
+                        previous = undefined;
+                    }, 500);
+                } else {
+                    previous = cell;
+                }
             }
         };
         container.appendChild(cell).className = "grid-item";
