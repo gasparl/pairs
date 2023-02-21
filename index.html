@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head><!-- [#1] head section -->
+    <link rel="icon" type="image/png" href="./media/lgo.png">
+    <title>Template SST study</title>
+    <meta charset="utf-8">
+    <!-- Use noindex [#4] -->
+    <!-- <meta name="robots" content="noindex, nofollow" /> -->
+    <meta name="googlebot" content="notranslate"> <!-- [#2]  -->
+    <meta name="author" content="Gaspar Lukacs">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no,maximum-scale=1">
+    <script src="./jscd.js"></script>
+    <script src="./utils.js"></script>
+    <script src="./main.js"></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body class="notranslate" translate="no"> <!-- [#3]  -->
+
+    <!-- warning that the browser is outdated (or JS is disabled) [#10] -->
+    <div id="init_fail">
+        It seems that the browser you are using does not support current JavaScript methods (ES6, standard since
+        2015),
+        or maybe JavaScript is disabled altogether. Please use an up-to-date version of a modern browser (preferably
+        Google Chrome) and/or
+        enable JavaScript.
+    </div>
+
+    <div id="intro" class="page">
+        <div style="display:flex;justify-content:space-between;">
+            <div style="float:left">
+                <img src="./media/uni_logo_1.png" alt="" style="max-height:50px;max-width:100%;">
+            </div>
+            <div style="float:right">
+                <img src="./media/uni_logo_2.svg" alt="" style="max-height:50px;max-width:100%;">
+            </div>
+        </div>
+        <div id="intro_text">
+        </div>
+    </div>
+
+    <div id="prelim" class="page">
+    </div>
+
+
+    <div id="game" class="page">
+        <div id="grid"></div>
+    </div>
+
+    <div id="ending" class="page selectable">
+    </div>
+
+</body>
+
+</html>
