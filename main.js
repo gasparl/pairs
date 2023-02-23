@@ -221,7 +221,7 @@ const set_grid = function(rows) {
                             set_picker(cell);
                         }
                         previous = undefined;
-                    }, 1000);
+                    }, 800);
                 } else {
                     previous = cell;
                 }
