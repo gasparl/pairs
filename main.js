@@ -217,7 +217,7 @@ const set_grid = function(rows) {
                             [previous, cell].forEach(el => {
                                 el.style.visibility = 'hidden';
                             });
-                        } else if (!colored.includes(cell.textContent)) {
+                        } else if (!colored.includes(cell.textContent) && Math.random() < 0.75) {
                             set_picker(cell);
                         }
                         previous = undefined;
