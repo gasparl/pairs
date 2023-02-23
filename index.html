@@ -3,17 +3,17 @@
 
 <head><!-- [#1] head section -->
     <link rel="icon" type="image/png" href="./media/lgo.png">
-    <title>Template SST study</title>
+    <title>Match Pairs</title>
     <meta charset="utf-8">
-    <!-- Use noindex [#4] -->
-    <!-- <meta name="robots" content="noindex, nofollow" /> -->
     <meta name="googlebot" content="notranslate"> <!-- [#2]  -->
     <meta name="author" content="Gaspar Lukacs">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no,maximum-scale=1">
     <script src="./jscd.js"></script>
     <script src="./utils.js"></script>
     <script src="./main.js"></script>
+    <script src="./color/reinvented-color-wheel.min.js"></script>
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./color/reinvented-color-wheel.min.css">
 </head>
 
 <body class="notranslate" translate="no"> <!-- [#3]  -->
@@ -47,6 +47,20 @@
     <div id="game" class="page">
         <div id="grid"></div>
     </div>
+
+    <div id='prompt'>
+        <div class="modal-content">
+            <div>Choose a color that you associate with</div>
+            <div id="sample"></div>
+            <hr>
+            <div id="picker"></div>
+            <hr>
+            <button class="main_button class_next" id="picker_button" type="button" onclick="">
+                OK
+            </button>
+        </div>
+    </div>
+
 
     <div id="ending" class="page selectable">
     </div>

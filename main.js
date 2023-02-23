@@ -89,7 +89,7 @@ const load_language = function() {
             }
         });
 
-        set_grid(2);
+        set_grid(5);
 
         // If the browser supports the JavaScript included (essentially: ES6), switch to first division.
         switch_div('init_fail', start_div, 0, false);
@@ -105,9 +105,88 @@ const load_language = function() {
     document.head.appendChild(lg_script);
 };
 
-const word_set = ['Admired', 'Alienated', 'Abused', 'Afraid', 'Ambivalent', 'Alive', 'Ashamed', 'Aggravated', 'Alarmed', 'Awkward', 'Appreciated', 'Burdened', 'Agitated', 'Anxious', 'Baffled', 'Assured', 'Condemned', 'Anguished', 'Appalled', 'Bewildered', 'Cheerful', 'Crushed', 'Annoyed', 'Apprehensive', 'Bothered', 'Confident', 'Defeated', 'Betrayed', 'Awed', 'Constricted', 'Content', 'Dejected', 'Cheated', 'Concerned', 'Directionless', 'Delighted', 'Demoralized', 'Coerced', 'Defensive', 'Disorganized', 'Determined', 'Depressed', 'Controlled', 'Desperate', 'Distracted', 'Ecstatic', 'Deserted', 'Deceived', 'Doubtful', 'Doubtful', 'Elated', 'Despised', 'Disgusted', 'Fearful', 'Flustered', 'Encouraged', 'Devastated', 'Dismayed', 'Frantic', 'Foggy', 'Energized', 'Disappointed', 'Displeased', 'Full', 'of', 'dread', 'Hesitant', 'Enthusiastic', 'Discarded', 'Dominated', 'Guarded', 'Immobilized', 'Excited', 'Discouraged', 'Enraged', 'Horrified', 'Misunderstood', 'Exuberant', 'Disgraced', 'Exasperated', 'Impatient', 'Perplexed', 'Flattered', 'Disheartened', 'Exploited', 'Insecure', 'Puzzled', 'Fortunate', 'Disillusioned', 'Frustrated', 'Intimidated', 'Stagnant', 'Fulfilled', 'Dismal', 'Fuming', 'Nervous', 'Surprised', 'Glad', 'Distant', 'Furious', 'Overwhelmed', 'Torn', 'Good', 'Distraught', 'Harassed', 'Panicky', 'Trapped', 'Grateful', 'Distressed', 'Hateful', 'Perplexed', 'Troubled', 'Gratified', 'Drained', 'Hostile', 'Petrified', 'Uncertain', 'Hopeful', 'Empty', 'Humiliated', 'Reluctant', 'Uncomfortable', 'Joyful', 'Exhausted', 'Incensed', 'Shaken', 'Undecided'];
+const font_color2 = function(bgColor) {
+    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+    var r = parseInt(color.substring(0, 2), 16); // hexToR
+    var g = parseInt(color.substring(2, 4), 16); // hexToG
+    var b = parseInt(color.substring(4, 6), 16); // hexToB
+    return (((r * 0.299) + (g * 0.587) + (b * 0.114)) > 186) ?
+        '#000000' : '#ffffff';
+};
 
-let selections = [];
+function font_color(bgColor) {
+    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+    var r = parseInt(color.substring(0, 2), 16); // hexToR
+    var g = parseInt(color.substring(2, 4), 16); // hexToG
+    var b = parseInt(color.substring(4, 6), 16); // hexToB
+    var uicolors = [r / 255, g / 255, b / 255];
+    var c = uicolors.map((col) => {
+        if (col <= 0.03928) {
+            return col / 12.92;
+        }
+        return Math.pow((col + 0.055) / 1.055, 2.4);
+    });
+    var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+    return (L > 0.179) ? '#000000' : '#ffffff';
+}
+
+const set_picker = function(cell) {
+    document.getElementById("picker").innerHTML = '';
+    document.getElementById("picker_button").disabled = true;
+    document.getElementById("sample").style.backgroundColor = null;
+    let selected = false;
+    const init_empty = ['reinvented-color-wheel--hue-handle', 'reinvented-color-wheel--sv-space', 'reinvented-color-wheel--sv-handle'];
+    // create a new color picker
+    const colorWheel = new ReinventedColorWheel({
+        // appendTo is the only required property. specify the parent element of the color wheel.
+        appendTo: document.getElementById("picker"),
+
+        // followings are optional properties and their default values.
+
+        // initial color (can be specified in hsv / hsl / rgb / hex)
+        hex: '#00ffff',
+        handleDiameter: null,
+
+        // handler
+        onChange: function(color) {
+            // the only argument is the ReinventedColorWheel instance itself.
+            if (!selected) {
+                init_empty.forEach(id => {
+                    [...document.getElementsByClassName(id)].forEach((elem) => {
+                        elem.style.visibility = 'visible';
+                    });
+                });
+                selected = true;
+                document.getElementById("picker_button").disabled = false;
+            }
+            document.getElementById("sample").style.backgroundColor = color.hex;
+            document.getElementById("sample").style.color = font_color(color.hex);
+        },
+    });
+
+    init_empty.forEach(id => {
+        [...document.getElementsByClassName(id)].forEach((elem) => {
+            elem.style.visibility = 'hidden';
+        });
+    });
+
+    document.getElementById("sample").textContent = cell.textContent;
+    colored.push(cell.textContent);
+
+    document.getElementById("prompt").style.display = "grid";
+    document.getElementById("picker_button").onclick = function() {
+        cell.dataset.bg = colorWheel.hex;
+        cell.style.backgroundColor = colorWheel.hex;
+        console.log(cell);
+
+        document.getElementById("prompt").style.display = "none";
+    };
+};
+
+const word_set = ['Admired', 'Alienated', 'Abused', 'Afraid', 'Ambivalent', 'Alive', 'Ashamed', 'Aggravated', 'Alarmed', 'Awkward', 'Appreciated', 'Burdened', 'Agitated', 'Anxious', 'Baffled', 'Assured', 'Condemned', 'Anguished', 'Appalled', 'Bewildered', 'Cheerful', 'Crushed', 'Annoyed', 'Apprehensive', 'Bothered', 'Confident', 'Defeated', 'Betrayed', 'Awed', 'Constricted', 'Content', 'Dejected', 'Cheated', 'Concerned', 'Directionless', 'Delighted', 'Demoralized', 'Coerced', 'Defensive', 'Disorganized', 'Determined', 'Depressed', 'Controlled', 'Desperate', 'Distracted', 'Ecstatic', 'Deserted', 'Deceived', 'Doubtful', 'Doubtful', 'Elated', 'Despised', 'Disgusted', 'Fearful', 'Flustered', 'Encouraged', 'Devastated', 'Dismayed', 'Frantic', 'Foggy', 'Energized', 'Disappointed', 'Displeased', 'Full', 'Hesitant', 'Enthusiastic', 'Discarded', 'Dominated', 'Guarded', 'Immobilized', 'Excited', 'Discouraged', 'Enraged', 'Horrified', 'Misunderstood', 'Exuberant', 'Disgraced', 'Exasperated', 'Impatient', 'Perplexed', 'Flattered', 'Disheartened', 'Exploited', 'Insecure', 'Puzzled', 'Fortunate', 'Disillusioned', 'Frustrated', 'Intimidated', 'Stagnant', 'Fulfilled', 'Dismal', 'Fuming', 'Nervous', 'Surprised', 'Glad', 'Distant', 'Furious', 'Overwhelmed', 'Torn', 'Good', 'Distraught', 'Harassed', 'Panicky', 'Trapped', 'Grateful', 'Distressed', 'Hateful', 'Perplexed', 'Troubled', 'Gratified', 'Drained', 'Hostile', 'Petrified', 'Uncertain', 'Hopeful', 'Empty', 'Humiliated', 'Reluctant', 'Uncomfortable', 'Joyful', 'Exhausted', 'Incensed', 'Shaken', 'Undecided'];
+
+
+const colored = [];
 let previous;
 let listen = true;
 const set_grid = function(rows) {
@@ -125,20 +204,24 @@ const set_grid = function(rows) {
         cell.onclick = function() {
             if (cell.childNodes[0].style.visibility !== 'visible' && listen) {
                 cell.childNodes[0].style.visibility = 'visible';
+                cell.style.backgroundColor = null;
                 if (previous !== undefined) {
                     listen = false;
                     setTimeout(() => {
                         listen = true;
                         [previous, cell].forEach(el => {
                             el.childNodes[0].style.visibility = 'hidden';
+                            el.style.backgroundColor = el.dataset.bg;
                         });
                         if (previous.textContent === cell.textContent) {
                             [previous, cell].forEach(el => {
                                 el.style.visibility = 'hidden';
                             });
+                        } else if (!colored.includes(cell.textContent)) {
+                            set_picker(cell);
                         }
                         previous = undefined;
-                    }, 500);
+                    }, 1000);
                 } else {
                     previous = cell;
                 }
@@ -147,10 +230,6 @@ const set_grid = function(rows) {
         container.appendChild(cell).className = "grid-item";
     });
 };
-
-
-
-
 
 // actions following consent
 const consent_submit = function() {
