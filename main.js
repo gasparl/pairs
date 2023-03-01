@@ -6,6 +6,8 @@ const start_div = 'game';
 // Here, the first div (ID) is 'intro'. To quickly test other pages (e.g. layout), switch the ID.
 // (notable other divisions: 'prelim', 'game')
 
+const rownums = [2, 3, 4, 5];
+
 // miscellaneous subject data [#31]
 const misc = {
     subject_id: rchoice("CDFGHJKLMNPQRSTVWXZ") +
@@ -89,7 +91,7 @@ const load_language = function() {
             }
         });
 
-        set_grid(5);
+        set_grid(rownums.shift());
 
         // If the browser supports the JavaScript included (essentially: ES6), switch to first division.
         switch_div('init_fail', start_div, 0, false);
@@ -105,14 +107,6 @@ const load_language = function() {
     document.head.appendChild(lg_script);
 };
 
-const font_color2 = function(bgColor) {
-    var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-    var r = parseInt(color.substring(0, 2), 16); // hexToR
-    var g = parseInt(color.substring(2, 4), 16); // hexToG
-    var b = parseInt(color.substring(4, 6), 16); // hexToB
-    return (((r * 0.299) + (g * 0.587) + (b * 0.114)) > 186) ?
-        '#000000' : '#ffffff';
-};
 
 function font_color(bgColor) {
     var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
@@ -171,22 +165,19 @@ const set_picker = function(cell) {
     });
 
     document.getElementById("sample").textContent = cell.textContent;
-    colored.push(cell.textContent);
+    colored[cell.textContent] = colorWheel.hex;
 
     document.getElementById("prompt").style.display = "grid";
     document.getElementById("picker_button").onclick = function() {
-        cell.dataset.bg = colorWheel.hex;
-        cell.style.backgroundColor = colorWheel.hex;
-        console.log(cell);
-
         document.getElementById("prompt").style.display = "none";
+        set_grid(rownums.shift());
     };
 };
 
 const word_set = ['Admired', 'Alienated', 'Abused', 'Afraid', 'Ambivalent', 'Alive', 'Ashamed', 'Aggravated', 'Alarmed', 'Awkward', 'Appreciated', 'Burdened', 'Agitated', 'Anxious', 'Baffled', 'Assured', 'Condemned', 'Anguished', 'Appalled', 'Bewildered', 'Cheerful', 'Crushed', 'Annoyed', 'Apprehensive', 'Bothered', 'Confident', 'Defeated', 'Betrayed', 'Awed', 'Constricted', 'Content', 'Dejected', 'Cheated', 'Concerned', 'Directionless', 'Delighted', 'Demoralized', 'Coerced', 'Defensive', 'Disorganized', 'Determined', 'Depressed', 'Controlled', 'Desperate', 'Distracted', 'Ecstatic', 'Deserted', 'Deceived', 'Doubtful', 'Doubtful', 'Elated', 'Despised', 'Disgusted', 'Fearful', 'Flustered', 'Encouraged', 'Devastated', 'Dismayed', 'Frantic', 'Foggy', 'Energized', 'Disappointed', 'Displeased', 'Full', 'Hesitant', 'Enthusiastic', 'Discarded', 'Dominated', 'Guarded', 'Immobilized', 'Excited', 'Discouraged', 'Enraged', 'Horrified', 'Misunderstood', 'Exuberant', 'Disgraced', 'Exasperated', 'Impatient', 'Perplexed', 'Flattered', 'Disheartened', 'Exploited', 'Insecure', 'Puzzled', 'Fortunate', 'Disillusioned', 'Frustrated', 'Intimidated', 'Stagnant', 'Fulfilled', 'Dismal', 'Fuming', 'Nervous', 'Surprised', 'Glad', 'Distant', 'Furious', 'Overwhelmed', 'Torn', 'Good', 'Distraught', 'Harassed', 'Panicky', 'Trapped', 'Grateful', 'Distressed', 'Hateful', 'Perplexed', 'Troubled', 'Gratified', 'Drained', 'Hostile', 'Petrified', 'Uncertain', 'Hopeful', 'Empty', 'Humiliated', 'Reluctant', 'Uncomfortable', 'Joyful', 'Exhausted', 'Incensed', 'Shaken', 'Undecided'];
 
 
-const colored = [];
+const colored = {};
 let previous;
 let listen = true;
 const set_grid = function(rows) {
@@ -195,16 +186,19 @@ const set_grid = function(rows) {
     const all_words = shuffle([].concat(...Array(2).fill(shuffle(word_set).slice(0, n_word / 2))));
 
     const container = document.getElementById("grid");
+    container.innerHTML = '';
     container.style.setProperty('--grid-rows', rows);
     container.style.setProperty('--grid-cols', cols);
     all_words.forEach((word, i) => {
         let cell = document.createElement("div");
         cell.innerHTML = '<span>' + word + '</span>';
         cell.id = 'cell_' + (i + 1);
+
         cell.onclick = function() {
             if (cell.childNodes[0].style.visibility !== 'visible' && listen) {
                 cell.childNodes[0].style.visibility = 'visible';
-                cell.style.backgroundColor = null;
+                cell.style.backgroundColor = cell.dataset.bg;
+                cell.style.color = font_color(cell.dataset.bg || '#ffffff');
                 if (previous !== undefined) {
                     listen = false;
                     setTimeout(() => {
@@ -217,8 +211,9 @@ const set_grid = function(rows) {
                             [previous, cell].forEach(el => {
                                 el.style.visibility = 'hidden';
                             });
-                        } else if (!colored.includes(cell.textContent) && Math.random() < 0.75) {
-                            set_picker(cell);
+                            if ([...document.getElementsByClassName('grid-item')].every(elem => elem.style.visibility === 'hidden')) {
+                                set_picker(cell);
+                            }
                         }
                         previous = undefined;
                     }, 800);
@@ -230,6 +225,7 @@ const set_grid = function(rows) {
         container.appendChild(cell).className = "grid-item";
     });
 };
+
 
 // actions following consent
 const consent_submit = function() {
