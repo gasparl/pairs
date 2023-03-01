@@ -165,16 +165,16 @@ const set_picker = function(cell) {
     });
 
     document.getElementById("sample").textContent = cell.textContent;
-    colored[cell.textContent] = colorWheel.hex;
 
     document.getElementById("prompt").style.display = "grid";
     document.getElementById("picker_button").onclick = function() {
         document.getElementById("prompt").style.display = "none";
+        colored[cell.textContent] = colorWheel.hex;
         set_grid(rownums.shift());
     };
 };
 
-const word_set = ['Admired', 'Alienated', 'Abused', 'Afraid', 'Ambivalent', 'Alive', 'Ashamed', 'Aggravated', 'Alarmed', 'Awkward', 'Appreciated', 'Burdened', 'Agitated', 'Anxious', 'Baffled', 'Assured', 'Condemned', 'Anguished', 'Appalled', 'Bewildered', 'Cheerful', 'Crushed', 'Annoyed', 'Apprehensive', 'Bothered', 'Confident', 'Defeated', 'Betrayed', 'Awed', 'Constricted', 'Content', 'Dejected', 'Cheated', 'Concerned', 'Directionless', 'Delighted', 'Demoralized', 'Coerced', 'Defensive', 'Disorganized', 'Determined', 'Depressed', 'Controlled', 'Desperate', 'Distracted', 'Ecstatic', 'Deserted', 'Deceived', 'Doubtful', 'Doubtful', 'Elated', 'Despised', 'Disgusted', 'Fearful', 'Flustered', 'Encouraged', 'Devastated', 'Dismayed', 'Frantic', 'Foggy', 'Energized', 'Disappointed', 'Displeased', 'Full', 'Hesitant', 'Enthusiastic', 'Discarded', 'Dominated', 'Guarded', 'Immobilized', 'Excited', 'Discouraged', 'Enraged', 'Horrified', 'Misunderstood', 'Exuberant', 'Disgraced', 'Exasperated', 'Impatient', 'Perplexed', 'Flattered', 'Disheartened', 'Exploited', 'Insecure', 'Puzzled', 'Fortunate', 'Disillusioned', 'Frustrated', 'Intimidated', 'Stagnant', 'Fulfilled', 'Dismal', 'Fuming', 'Nervous', 'Surprised', 'Glad', 'Distant', 'Furious', 'Overwhelmed', 'Torn', 'Good', 'Distraught', 'Harassed', 'Panicky', 'Trapped', 'Grateful', 'Distressed', 'Hateful', 'Perplexed', 'Troubled', 'Gratified', 'Drained', 'Hostile', 'Petrified', 'Uncertain', 'Hopeful', 'Empty', 'Humiliated', 'Reluctant', 'Uncomfortable', 'Joyful', 'Exhausted', 'Incensed', 'Shaken', 'Undecided'];
+const word_set = shuffle(['Admired', 'Alienated', 'Abused', 'Afraid', 'Ambivalent', 'Alive', 'Ashamed', 'Aggravated', 'Alarmed', 'Awkward', 'Appreciated', 'Burdened', 'Agitated', 'Anxious', 'Baffled', 'Assured', 'Condemned', 'Anguished', 'Appalled', 'Bewildered', 'Cheerful', 'Crushed', 'Annoyed', 'Apprehensive', 'Bothered', 'Confident', 'Defeated', 'Betrayed', 'Awed', 'Constricted', 'Content', 'Dejected', 'Cheated', 'Concerned', 'Directionless', 'Delighted', 'Demoralized', 'Coerced', 'Defensive', 'Disorganized', 'Determined', 'Depressed', 'Controlled', 'Desperate', 'Distracted', 'Ecstatic', 'Deserted', 'Deceived', 'Doubtful', 'Doubtful', 'Elated', 'Despised', 'Disgusted', 'Fearful', 'Flustered', 'Encouraged', 'Devastated', 'Dismayed', 'Frantic', 'Foggy', 'Energized', 'Disappointed', 'Displeased', 'Full', 'Hesitant', 'Enthusiastic', 'Discarded', 'Dominated', 'Guarded', 'Immobilized', 'Excited', 'Discouraged', 'Enraged', 'Horrified', 'Misunderstood', 'Exuberant', 'Disgraced', 'Exasperated', 'Impatient', 'Perplexed', 'Flattered', 'Disheartened', 'Exploited', 'Insecure', 'Puzzled', 'Fortunate', 'Disillusioned', 'Frustrated', 'Intimidated', 'Stagnant', 'Fulfilled', 'Dismal', 'Fuming', 'Nervous', 'Surprised', 'Glad', 'Distant', 'Furious', 'Overwhelmed', 'Torn', 'Good', 'Distraught', 'Harassed', 'Panicky', 'Trapped', 'Grateful', 'Distressed', 'Hateful', 'Perplexed', 'Troubled', 'Gratified', 'Drained', 'Hostile', 'Petrified', 'Uncertain', 'Hopeful', 'Empty', 'Humiliated', 'Reluctant', 'Uncomfortable', 'Joyful', 'Exhausted', 'Incensed', 'Shaken', 'Undecided']);
 
 
 const colored = {};
@@ -183,29 +183,31 @@ let listen = true;
 const set_grid = function(rows) {
     const cols = 4;
     const n_word = rows * cols;
-    const all_words = shuffle([].concat(...Array(2).fill(shuffle(word_set).slice(0, n_word / 2))));
+    const all_words = shuffle([].concat(...Array(2).fill(word_set.slice(0, n_word / 2))));
 
     const container = document.getElementById("grid");
     container.innerHTML = '';
     container.style.setProperty('--grid-rows', rows);
     container.style.setProperty('--grid-cols', cols);
+
     all_words.forEach((word, i) => {
         let cell = document.createElement("div");
         cell.innerHTML = '<span>' + word + '</span>';
         cell.id = 'cell_' + (i + 1);
+        cell.dataset.bg = colored[word] === undefined ? '#ffffff' : colored[word];
 
         cell.onclick = function() {
             if (cell.childNodes[0].style.visibility !== 'visible' && listen) {
                 cell.childNodes[0].style.visibility = 'visible';
                 cell.style.backgroundColor = cell.dataset.bg;
-                cell.style.color = font_color(cell.dataset.bg || '#ffffff');
+                cell.style.color = font_color(cell.dataset.bg);
                 if (previous !== undefined) {
                     listen = false;
                     setTimeout(() => {
                         listen = true;
                         [previous, cell].forEach(el => {
                             el.childNodes[0].style.visibility = 'hidden';
-                            el.style.backgroundColor = el.dataset.bg;
+                            el.style.backgroundColor = null;
                         });
                         if (previous.textContent === cell.textContent) {
                             [previous, cell].forEach(el => {
