@@ -125,7 +125,6 @@ function font_color(bgColor) {
 }
 
 const set_picker = function(cell) {
-    console.log('hello');
     document.getElementById("picker").innerHTML = '';
     document.getElementById("picker_button").disabled = true;
     document.getElementById("sample").style.color = null;
