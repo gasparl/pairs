@@ -6,7 +6,7 @@ const start_div = 'game';
 // Here, the first div (ID) is 'intro'. To quickly test other pages (e.g. layout), switch the ID.
 // (notable other divisions: 'prelim', 'game')
 
-const rownums = [2, 3, 4, 5];
+const rownums = [2, 3, 4, 5, 6, 7];
 
 // miscellaneous subject data [#31]
 const misc = {
